@@ -5,8 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    
+    <header>
+        <div class="header-container">
+
+            <div id="logo">
+                <!-- Länka till  https://www.hemmakvall.se/ -->
+            </div>
+
+            <div id="hamburger-menu">
+                <button id="menu-toggle" aria-label="Öppna meny">☰</button>
+
+                <nav id="menu">
+                    <ul>
+                        <li id="menu-first"><a href="https://www.hemmakvall.se/forst-pa-hemmakvall/"></a>FÖRST HOS OSS</li>
+                        <li id="menu-second"><a href="https://www.hemmakvall.se/hitta-butik/"></a>HITTA BUTIK</li>
+                        <li id="menu-third"><a href="https://www.hemmakvall.se/medlem/"></a>KUNDKLUBBEN</li>
+                        <li id="menu-fourth"><a href="https://www.hemmakvall.se/kontakta-oss/"></a>KONTAKTA OSS</li>
+                        <li id="menu-fifth"><a href="https://www.hemmakvall.se/hemmis-kvallis/"></a>HEMMIS & KVÄLLIS</li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="search-container">
+
+            <select id="select-genre" aria-label="Välj en filmgenre att söka efter">
+                <option value="">Alla genrer</option>
+                <option value="action">Action</option>
+                <option value="children">Barnfilmer</option>
+                <option value="drama">Drama</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="comedy">Komedi</option>
+                <option value="crime">Kriminaldrama</option>
+                <option value="romance">Romantik</option>
+                <option value="scifi">Scifi</option>
+                <option value="horror">Skräck</option>
+                <option value="thriller">Thriller</option>
+                <option value="adventure">Äventyr</option>
+            </select>
+
+            <input type="text" id="search-input" aria-label="Sök efter en filmtitel" placeholder="Ange filmtitel">
+
+            <button id="search-button" aria-label="Sök efter filmer"><i class="fa fa-search"></i></button>
+
+        </div>
+    </header>
+
+    <main>
+        <button id="favourites-button" aria-label="Se dina sparade filmer">Sparade filmer</button>
+        <div id="movie-container"></div>
+    </main>
+
+    <footer>
+        <div id="footer-container">
+            <div id="links-container"></div>
+
+            <div id="info-container">
+                <div id="info-links"></div>
+                <p id="copyright">©2024 Hemmakväll</p>
+            </div>
+        </div>
+
+    </footer>
 </body>
 </html>
