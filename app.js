@@ -77,13 +77,32 @@ async function fetchMovies(title, genreKey) {
     }
 }
 
+searchButton.addEventListener("click", () => {
+    const query = searchInput.value;
+    const genreId = selectGenre.value;
+    fetchMovies(query, genreId)
+});
+
 // Function to create HTML elements to display the movies
-function displayMovies() {
+function displayMovies(movies) {
 
-}
+    movieContainer.innerHTML = "";
 
-// Function to create HTML elements to display movies the user has saved
-function displayFavourites() {
+    movies.forEach(movie => {
+
+        const movieCard = document.createElement("div");
+        movieCard.className = "movie-card";
+
+        movieCard.innerHTML = `
+        <button class="add-button" aria-label="Spara ${movie.title} bland dina favoriter">+</button>
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+        <h3 class="movie-title">${movie.title}</h3>
+        `;
+
+        movieContainer.appendChild(movieCard);
+    });
+
+    
 
 }
 
@@ -93,17 +112,15 @@ function createPages() {
 }
 
 // Function to save movies to favourites
-function saveAsFavourite() {
-
+function saveAsFavourite(id, title) {
+    if (!favouriteMovies.some(movie => movie.id === id)) {
+        favouriteMovies.push({id, title});
+        localStorage.setItem("favourites", JSON.stringify(favouriteMovies));
+    }
 }
 
 // Function to remove movies from favourites
 function removeFromFavourites() {
-
-}
-
-// Function save the entire array to localStorage
-function saveToLocalStorage() {
 
 }
 
