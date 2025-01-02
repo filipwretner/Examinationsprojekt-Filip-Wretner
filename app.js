@@ -1,5 +1,5 @@
 const apiKey = ""; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
-const baseUrl = "https://api.themoviedb.org/3"
+const baseUrl = "https://api.themoviedb.org/3"; // base URL we can add endpoints
 
 let favouriteMovies = []; // Empty array for localStorage
 
@@ -16,37 +16,30 @@ const movieContainer = document.getElementById("movie-container");
 menuToggle.addEventListener("click", () => {menu.classList.toggle("active");});
 
 
-// Function to fetch list of movies from API
-async function fetchMovies(title, genreKey) {
+searchButton.addEventListener("click", () => {
+    const query = searchInput.value;
+    const genreId = selectGenre.value;
+    fetchMovies(query, genreId)
+});
+
+
+async function fetchMovies(title, genreId) {
 
     try {
 
-        const genreMap = {
-            action: 28,
-            animated: 16,
-            drama: 18,
-            fantasy: 14,
-            comedy: 35,
-            crime: 80,
-            romance: 10749,
-            scifi: 878,
-            horror: 27,
-            thriller: 53,
-            adventure: 12,
-        };
-
-        const genreId = genreMap[genreKey] || '';
-
-        
         const searchUrl = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`;
         const genreUrl = `${baseUrl}/discover/movie?api_key=${apiKey}&with_genres=${genreId}`;
 
+        // fetching based on search parameters and genre at the same time
         const [searchResponse, genreResponse] = await Promise.all([
             fetch(searchUrl),
             genreId ? fetch(genreUrl) : Promise.resolve({ json: () => ({ results: [] }) })
         ]);
 
+    
         if (!searchResponse.ok || !genreResponse.ok) {
+
+            // Checking if which fetch or if both had errors
             const searchErrorData = !searchResponse.ok ? await searchResponse.json() : null;
             const genreErrorData = !genreResponse.ok ? await genreResponse.json() : null;
 
@@ -55,6 +48,7 @@ async function fetchMovies(title, genreKey) {
             if (searchErrorData) {
                 errorMessage += `Fel vi sökning (${searchResponse.status}): ${searchErrorData.status_message}\n`;
             }
+
             if (genreErrorData) {
                 errorMessage += `Fel vid hämtning av genrer (${genreResponse.status}): ${genreErrorData.status_message}`;
             }
@@ -65,6 +59,7 @@ async function fetchMovies(title, genreKey) {
         const searchData = await searchResponse.json();
         const genreData = await genreResponse.json();
 
+        // Makes sure we don't add the same movie twice
         const allMovies = [...searchData, ...genreData];
         const uniqueMovies = Array.from(
             new Map(allMovies.map(movie => [movie.id, movie])).values()
@@ -77,13 +72,6 @@ async function fetchMovies(title, genreKey) {
     }
 }
 
-searchButton.addEventListener("click", () => {
-    const query = searchInput.value;
-    const genreId = selectGenre.value;
-    fetchMovies(query, genreId)
-});
-
-// Function to create HTML elements to display the movies
 function displayMovies(movies) {
 
     movieContainer.innerHTML = "";
@@ -102,8 +90,6 @@ function displayMovies(movies) {
         movieContainer.appendChild(movieCard);
     });
 
-    
-
 }
 
 // Function for pagination and to create page buttons
@@ -111,8 +97,9 @@ function createPages() {
 
 }
 
-// Function to save movies to favourites
+
 function saveAsFavourite(id, title) {
+
     if (!favouriteMovies.some(movie => movie.id === id)) {
         favouriteMovies.push({id, title});
         localStorage.setItem("favourites", JSON.stringify(favouriteMovies));
