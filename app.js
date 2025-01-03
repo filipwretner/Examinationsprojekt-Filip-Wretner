@@ -1,4 +1,4 @@
-const apiKey = ""; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
+const apiKey = "8bf3a39da5484bb2b22ffd61e2facb8e"; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
 const baseUrl = "https://api.themoviedb.org/3"; // base URL we can add endpoints
 
 let favouriteMovies = []; // Empty array for localStorage
@@ -17,60 +17,62 @@ menuToggle.addEventListener("click", () => {menu.classList.toggle("active");});
 
 
 searchButton.addEventListener("click", () => {
-    const query = searchInput.value;
-    const genreId = selectGenre.value;
-    fetchMovies(query, genreId)
+    const query = searchInput.value || '';  // Säkerställ att query inte är undefined eller null
+    const genreId = selectGenre.value || '';  // Säkerställ att genreId inte är undefined eller null
+    console.log("Title:", query);  // Logga för att kontrollera title
+    console.log("Genre ID:", genreId);  // Logga för att kontrollera genreId
+    fetchMovies(query, genreId);
 });
 
-
 async function fetchMovies(title, genreId) {
-
     try {
+        title = (title && typeof title === 'string') ? title.trim() : '';
+        genreId = (genreId && typeof genreId === 'string') ? genreId.trim() : '';
 
-        const searchUrl = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`;
-        const genreUrl = `${baseUrl}/discover/movie?api_key=${apiKey}&with_genres=${genreId}`;
-
-        // fetching based on search parameters and genre at the same time
-        const [searchResponse, genreResponse] = await Promise.all([
-            fetch(searchUrl),
-            genreId ? fetch(genreUrl) : Promise.resolve({ json: () => ({ results: [] }) })
-        ]);
-
-    
-        if (!searchResponse.ok || !genreResponse.ok) {
-
-            // Checking if which fetch or if both had errors
-            const searchErrorData = !searchResponse.ok ? await searchResponse.json() : null;
-            const genreErrorData = !genreResponse.ok ? await genreResponse.json() : null;
-
-            let errorMessage = "Fel vid hämtning av data från API:\n";
-
-            if (searchErrorData) {
-                errorMessage += `Fel vi sökning (${searchResponse.status}): ${searchErrorData.status_message}\n`;
-            }
-
-            if (genreErrorData) {
-                errorMessage += `Fel vid hämtning av genrer (${genreResponse.status}): ${genreErrorData.status_message}`;
-            }
-
-            throw new Error(errorMessage);
+        let url;
+        
+        // Determine which URL to use based on inputs
+        if (title && genreId) {
+            // Both title and genre
+            url = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`;
+        } else if (genreId) {
+            // Only genre
+            url = `${baseUrl}/discover/movie?api_key=${apiKey}&with_genres=${genreId}`;
+        } else if (title) {
+            // Only title
+            url = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`;
+        } else {
+            // Fallback - no inputs
+            url = `${baseUrl}/movie/popular?api_key=${apiKey}`;
         }
 
-        const searchData = await searchResponse.json();
-        const genreData = await genreResponse.json();
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        let movies = data.results;
 
-        // Makes sure we don't add the same movie twice
-        const allMovies = [...searchData, ...genreData];
-        const uniqueMovies = Array.from(
-            new Map(allMovies.map(movie => [movie.id, movie])).values()
-        );
+        // Additional genre filtering if both title and genre are present
+        if (title && genreId) {
+            movies = movies.filter(movie => movie.genre_ids.includes(parseInt(genreId)));
+        }
 
-        displayMovies(uniqueMovies);
+        if (movies.length > 0) {
+            displayMovies(movies);
+        } else {
+            movieContainer.innerHTML = '<p>No movies found matching your criteria.</p>';
+        }
 
     } catch (error) {
-        console.error(error.message);
+        console.error('Error:', error);
+        movieContainer.innerHTML = '<p>An error occurred while fetching movies.</p>';
     }
 }
+
 
 function displayMovies(movies) {
 
