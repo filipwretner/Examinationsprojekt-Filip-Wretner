@@ -1,64 +1,46 @@
 # Examinationsprojekt-Filip-Wretner
  
-Projektbeskrivning
----------------------------------------------------------------------------------------------------------
-FilmSamlaren är en webbapplikation som låter användaren söka efter filmer genom att använda ett offentligt film-API (t.ex. The Open Movie Database (OMDb)). Användaren ska kunna:
+Hur du startar och sedan navigerar på applikationen:
 
-Se minst 10 filmer utan att behöva söka efter något.
-Ange en filmtitel i ett sökfält eller användaren skall kunna filtrera filmer med via exempel genrer.
-När användaren klickar på en vald film, visa mer detaljerad information (titel, år, genre, kort beskrivning, poster m.m?).
-Du ska utveckla applikationen individuellt.
+1. Se till att "Live Server" extension finns i din VS Code.
+2. Öppna filen "index.html" i VS Code och klicka på "Go Live" längst ner till höger i VS Code.
+3. index.html kommer då öppnas lokalt på din webbläsare. 
+4. På första sidan kan du:
+- Söka efter film med titel genom input-fältet eller med genre genom dropdown-menyn. 
+- Se information om en film genom att trycka på "Visa detaljer" knappen.
+- Spara filmer bland dina favoriter genom att trycka på '+' knappen på ett "filmkort".
+- Visa dina sparade favoriter genom att trycka på "Sparade filmer" knappen.
+- Kan såklart också ta bort filmer från favoriter genom att trycka på '-' knappen på ett filmkort du sparat som favorit.
 
-Projektkrav
 ---------------------------------------------------------------------------------------------------------
 
-Teknisk Funktionalitet för att nå G nivå:
----------------------------------------------------------------------------------------------------------
-Datahantering (JSON):
-Hämta data i JSON-format från ett offentligt API.
-Tolka och presentera JSON-datan på webbsidan.
+Länk till Figma: 
+
+API:iet jag använde var: https://www.omdbapi.com/
+För att hämta data använder jag mig av tre olika endpoints. En för att söka efter titel, en för att filtrera efter genre och en där jag hämtar på en lista på de mest populära filmerna men jag använder också denna endpoint för att få mer generell information om en film. 
+
+De parametrar som används för att få den data jag behöver:
+- api_key: För att autentisera mig mot API:et.
+- page: Generellt för att hantera paginering.
+- query: Sökparameter.
+- with_genres: Filterar efter genre.
+- movieId: Hämtar information om en specifik film. 
+
+Datahantering: 
+API anroppet hämtar data i JSON format. I fetchMovies funktionen hämtas den data som anropas vilket sedan valideras för att sedan parsas så länge det inte blivit något fel vid själva hämtningen, t.ex. om servern var nere eller om det är något fel med API nyckeln. Efter det kollar vi om vi har hittat några filmer inom det kriteriet som söks efter och kallar sedan på displayMovies funktionen om vi har hittat filmer, denna funktion renderar då alla filmer som matchar sökningen. Ett ytterligare anrop görs när användaren vill se mer information om en film, då anropas funktionen openMovieDetails som hämtar mer information om just den filmen, denna data hanteras på samma sätt. 
 
 HTTP/HTTPS & Asynkronitet:
-Använd fetch() för att göra asynkrona GET-förfrågningar mot API:et.
-Använd async/await och try/catch för felhantering av asynkrona operationer..
-Säkerställ att du hanterar nätverksfel, ogiltiga sökningar och oväntade svar på ett användarvänligt sätt.
+I funktionerna fetchMovies och openMoviesDetails används fetch() för att göra asynkrona HTTP GET-förfrågninar till API:et. Använder async/await så att funktionen väntar på respons från API innan det bearbetas. Använder try/catch för att hantera eventuella fel eller nätverksproblem samt återger information kring detta till användaren. 
 
-Dynamisk Komponent och Datatyper/Operatorer:
-Låt användaren söka efter filmer via ett input-fält  eller en filtrering av listad data.
-Visa sökresultatet  eller filtrerad data dynamiskt på sidan (skapa element i DOM).
-Räkna och visa antalet matchande filmer. Använd JavaScript-logik (t.ex. operatorer och villkor) för att dölja visa element vid behov.
-När användaren klickar på en film, visa detaljer (på samma sida eller i en modal/overlay).
-När användaren interagerar (t.ex. skriver in sökord, klickar på en filter knapp) ska innehållet på sidan uppdateras dynamiskt.
+Felhantering:
+Try/catch visar vilket typ av fel som uppstått, t.ex. 404 eller 401. Ogiltiga sökningar hanteras genom att kolla om det finns några filmer som matchar sökningen och att endast visa ett meddelande när det inte fanns några filmer. 
 
-UX/UI och WCAG:
-Ta fram en enkel wireframe eller mockup i Figma där du visar hur du tänkt kring layout och UX/UI-principer (de 6 principerna ni lärt er).
-Bifoga en länk eller bild på din Figma-design i projektets README.
-Implementera minst några grundläggande WCAG-hänsyn i din kod (ex. alt-texter på bilder, tydlig färgkontrast, semantisk HTML-struktur).
-Använd principer om användarvänlighet, konsekvens, feedback, felprevention – t.ex. ge användaren tydlig återkoppling när data laddas, eller vid fel.
+UI/UX:
+Använt Hemmakvälls hemsida som mall när det gäller design och färgkontraster. WCAG principer följs i form av alt-texter vid bilder, aria-labels vid relevanta HTML element och semantisk struktur. Sidan är väldigt enkel och användarvänlig generellt så det krävdes inte jättemycket på denna fronten. Exempel på hur jag jobbat med det är t.ex. om du har tryckt på "Sparade filmer" knappen för att visa dina sparade filmer så måste du konfirmera att du vill ta bort en viss film. 
 
-Versionshantering med Git:
-Använd Git för att versionshantera ditt projekt.
-Minst 3 meningsfulla commits.
-1 “huvudbranch” (main?), den använder ni vid presentationen. 
-1 develop branch som mergas i huvud branchen.
-Minst 1 feature branch som mergas i developbranchen.
+Verisionshantering i Git: 
+Har jobbat i 3/4 brancher. Gjorde en enkel struktur i main, skapade sedan en dev branch från main och sedan två feature branches från dev: en för fetch funktionerna och en för pagineringsfunktionen. Började då med att göra klart det mesta i fetch vilket även inkluderade displayMovies funktionen och allt kring localStorage. Sedan mergade jag från fetch-dev in i dev, sedan pullade jag från den uppdaterade dev för att implementera pagineringen och mergade då tillbaka i dev igen. Därefter fortsatte jag jobba i dev för att göra det sista kring styling och eventuella små fixar i övrigra funktioner. Det sista jag gjorde innan inlämning var att skriva den här meningen innan jag merga dev med main och för att sedan lämna in projektet.
 
-Teknisk Funktionalitet för att nå VG nivå:
----------------------------------------------------------------------------------------------------------
-Favoritlista (LocalStorage):
-Låt användaren markera utvalda filmer som favoriter och spara dem i LocalStorage. Favoriter ska kunna ses även efter om laddning av sidan.
+---------------------------------------------------------------------------
 
-Responsiv Design:
-Gör gränssnittet responsivt. (3 skärmar: mobil, tablet, desktop storlekar)
 
-UX/UI och WCAG:
-Figma design för alla 3 skärmar
-Hanterar asynkronitet med gott handlag:
-Använder Promise.all() eller caching.
-
-Versionshantering med Git:
-1 huvud branch, minst 1 develop branch och minst 3 feature brancher och allt mergas i rätt ordning (feature branch inte in direkt i huvud branch), minst 5 commits, tydliga commit-meddelanden.
-Skapa minst 2 sidor.
-
-Organisation:
-Har du flera filer av samma sort? Skapa mapp för det, till exempel du har 2 html filer, skapa mapp!

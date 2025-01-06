@@ -229,8 +229,30 @@ function displayFavourites() {
 }
 
 async function openMovieDetails(movieId) {
+
     try {
         const response = await fetch(`${baseUrl}/movie/${movieId}?api_key=${apiKey}`);
+
+        if (!response.ok) {
+            let errorMessage;
+
+            switch (response.status) {
+                case 401:
+                    errorMessage = 'Obehörig åtkomst. Kontrollera API-nyckeln.';
+                    break;
+                case 404:
+                    errorMessage = 'Resursen kunde inte hittas.';
+                    break;
+                case 500:
+                    errorMessage = 'Serverfel. Försök igen senare.';
+                    break;
+                default:
+                    errorMessage = `HTTP-fel! Status: ${response.status}`;
+            }
+
+            throw new Error(errorMessage);
+        }
+
         const movieDetails = await response.json();
 
         document.getElementById("movie-title-modal").innerText = movieDetails.title;
@@ -240,8 +262,13 @@ async function openMovieDetails(movieId) {
         document.getElementById("movie-rating").innerText = movieDetails.vote_average;
 
         document.getElementById("movie-modal").style.display = "flex";
+
     } catch (error) {
-        console.error('Fel vid hämtning av filmdetaljer:', error);
+        console.error('Fel:', error.message || error);
+        document.getElementById("movie-modal").innerHTML = `
+        <p>Ett fel uppstod vid hämtning av filmer. Försök igen senare.</p>
+        <p>Detaljer: ${error.message || 'Okänt fel.'}</p>
+        `;
     }
 }
 

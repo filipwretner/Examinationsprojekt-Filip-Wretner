@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Hemmakväll - Filmsamlaren</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -61,7 +61,7 @@
     </div>
 
     <main>  
-        <div id="movie-count"></div>
+        <div id="movie-count" aria-label="Antal filmer på denna sida"></div>
 
         <div id="movie-container"></div>
 
@@ -82,12 +82,30 @@
 
     <footer>
         <div id="footer-container">
-            <div id="links-container"></div>
+            <div class="footer-section">
+                <h3>Hemmakväll - Filmsamlaren</h3>
 
-            <div id="info-container">
-                <div id="info-links"></div>
-                
-                <p id="copyright">©2024 Hemmakväll</p>
+                <ul>
+                    <li><a href="#">Om oss</a></li>
+                    <li><a href="#">Kontakta oss</a></li>
+                    <li><a href="#">Villkor</a></li>
+                    <li><a href="#">Integritetspolicy</a></li>
+                </ul>
+
+            </div>
+
+            <div class="footer-section">
+                <h3>Följ oss</h3>
+
+                <div class="social-links">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Hemmakväll. Alla rättigheter förbehållna.</p>
             </div>
         </div>
 
