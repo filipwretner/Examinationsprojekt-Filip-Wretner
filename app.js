@@ -1,7 +1,7 @@
 const apiKey = ""; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
 const baseUrl = "https://api.themoviedb.org/3"; // base URL we can add endpoints
 
-let favouriteMovies = []; // Empty array for localStorage
+let favouriteMovies = JSON.parse(localStorage.getItem("favourites")) || []; // Array for local storage
 
 
 const menuToggle = document.getElementById("menu-toggle");
@@ -25,7 +25,9 @@ searchButton.addEventListener("click", () => {
 });
 
 async function fetchMovies(title, genreId, page = 1) {
+
     try {
+
         // Validera och trimma inputs
         title = (title && typeof title === 'string') ? title.trim() : '';
         genreId = (genreId && typeof genreId === 'string') ? genreId.trim() : '';
@@ -74,7 +76,7 @@ async function fetchMovies(title, genreId, page = 1) {
 
         if (movies.length > 0) {
             displayMovies(movies);
-            createPages(data.total_pages, page); // Lägg till paginering
+            createPages(data.total_pages, page); 
         } else {
             movieContainer.innerHTML = '<p>Hittade inga filmer som matchade din sökning.</p>';
         }
@@ -98,48 +100,173 @@ function displayMovies(movies) {
         const movieCard = document.createElement("div");
         movieCard.className = "movie-card";
 
+        const isFavourite = favouriteMovies.some(favMovie => favMovie.id === movie.id);
+        const buttonText = isFavourite ? "-" : "+";
+        const buttonClass = isFavourite ? "remove-button" : "add-button";
+
         movieCard.innerHTML = `
-        <button class="add-button" aria-label="Spara ${movie.title} bland dina favoriter">+</button>
-        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+        <div class="image-container">
+            <button class="${buttonClass}" data-id="${movie.id}" data-title="${movie.title}" data-poster="${movie.poster_path}" aria-label="${buttonText === '+' ? 'Spara' : 'Ta bort'} ${movie.title} bland dina favoriter">${buttonText}</button>
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+        </div>
         <h3 class="movie-title">${movie.title}</h3>
         `;
 
         movieContainer.appendChild(movieCard);
     });
 
+
+    const buttons = document.querySelectorAll(".add-button, .remove-button");
+
+    buttons.forEach(button => {
+
+        button.addEventListener("click", (event) => {
+
+            const button = event.target;
+            const movieId = parseInt(button.getAttribute("data-id"));
+            const movieTitle = button.getAttribute("data-title");
+            const moviePoster = button.getAttribute("data-poster");
+
+            if (button.classList.contains("add-button")) {
+
+                saveAsFavourite(movieId, movieTitle, moviePoster);
+                button.classList.remove("add-button");
+                button.classList.add("remove-button");
+                button.innerText = "-";
+
+            } else if (button.classList.contains("remove-button")) {
+
+                removeFromFavourites(movieId);
+                button.classList.remove("remove-button");
+                button.classList.add("add-button");
+                button.innerText = "+";
+            }
+
+            if (showingFavourites) {
+                displayFavourites();
+            }
+        });
+    });
+
+}
+
+let showingFavourites = false;
+
+favouritesButton.addEventListener("click", () => {
+
+    if (showingFavourites) {
+        fetchMovies();
+        favouritesButton.innerText = "Sparade filmer";
+        showingFavourites = false;
+
+    } else {
+        displayFavourites();
+        favouritesButton.innerText = "Visa alla filmer";
+        showingFavourites = true;
+
+    }
+});
+
+function displayFavourites() {
+
+    if (favouriteMovies.length === 0) {
+        movieContainer.innerHTML = "<p>Du har inga sparade filmer.</p>";
+        return;
+    }
+
+    movieContainer.innerHTML = "";
+
+    favouriteMovies.forEach(movie => {
+
+        const movieCard = document.createElement("div");
+        movieCard.className = "movie-card";
+
+        movieCard.innerHTML = `
+            <div class="image-container">
+                <button class="remove-button" data-id="${movie.id}" data-title="${movie.title}" aria-label="Ta bort ${movie.title} bland dina favoriter">-</button>
+                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+            </div>
+            <h3 class="movie-title">${movie.title}</h3>
+        `;
+
+        movieContainer.appendChild(movieCard);
+    });
+
+    const buttons = document.querySelectorAll(".remove-button");
+    buttons.forEach(button => {
+        button.addEventListener("click", (event) => {
+            const button = event.target;
+            const movieId = parseInt(button.getAttribute("data-id"));
+            removeFromFavourites(movieId);
+            displayFavourites(); // Uppdatera listan av sparade filmer
+        });
+    });
 }
 
 // Function for pagination and to create page buttons
 function createPages(totalPages, currentPage = 1) {
+
     const paginationContainer = document.getElementById("pagination-container");
 
     paginationContainer.innerHTML = "";
 
-    for (let i = 1; i <= totalPages; i++) {
+    totalPages = 50;
+
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, startPage + 4);
+
+    if (startPage > 1) {
+        const firstPageButton = document.createElement("button");
+        firstPageButton.className = "page-button";
+        firstPageButton.innerText = "1";
+        paginationContainer.appendChild(firstPageButton);
+
+        if (startPage > 2) {
+            const dots = document.createElement("span");
+            dots.innerText = "...";
+            paginationContainer.appendChild(dots);
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
 
         const pageButton = document.createElement("button");
         pageButton.className = "page-button";
         pageButton.innerText = i;
 
-        // Markera den aktuella sidan
         if (i === currentPage) {
             pageButton.classList.add("active");
         }
 
-        // Lägg till click-event för sidladdning
         pageButton.addEventListener("click", () => {
             fetchMovies(searchInput.value, selectGenre.value, i); // Laddar filmer för vald sida
         });
 
         paginationContainer.appendChild(pageButton);
     }
+
+    if (endPage < totalPages) {
+
+        if (endPage < totalPages - 1) {
+            const dots = document.createElement("span");
+            dots.innerText = "...";
+            paginationContainer.appendChild(dots);
+        }
+
+        const lastPageButton = document.createElement("button");
+        lastPageButton.className = "page-button";
+        lastPageButton.innerText = totalPages;
+        paginationContainer.appendChild(lastPageButton);
+    }
 }
 
-function saveAsFavourite(id, title) {
+function saveAsFavourite(id, title, posterPath) {
 
     if (!favouriteMovies.some(movie => movie.id === id)) {
-        favouriteMovies.push({id, title});
+
+        favouriteMovies.push({id, title, poster_path: posterPath});
         localStorage.setItem("favourites", JSON.stringify(favouriteMovies));
+
     }
 }
 
@@ -154,9 +281,7 @@ function removeFromFavourites(id) {
         localStorage.setItem("favourites", JSON.stringify(favouriteMovies));
 
         console.log(`Filmen togs bort från favoriter`);
-    } else {
-        console.log(`FIlmen hittades inte i favoriter`);
-    }
+    } 
     
 }
 
