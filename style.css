@@ -492,7 +492,7 @@ footer {
 
     #movie-container {
         grid-template-columns: repeat(1fr, 1fr);
-        gap: 180px;
+        gap: 80px;
     }
 
     .movie-card {
@@ -500,11 +500,10 @@ footer {
         
     }
 
-    .add-button {
-        width: 25px;
-        height: 25px;
-        font-size: 14px;
+    .movie-card h3 {
+        margin-top: 25px;
     }
+
 
     #pagination-container {
         flex-wrap: wrap; 
