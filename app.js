@@ -1,4 +1,4 @@
-const apiKey = ""; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
+const apiKey = "8bf3a39da5484bb2b22ffd61e2facb8e"; // API key from TMDb API 8bf3a39da5484bb2b22ffd61e2facb8e
 const baseUrl = "https://api.themoviedb.org/3"; // base URL we can add endpoints
 
 let favouriteMovies = JSON.parse(localStorage.getItem("favourites")) || []; // Array for local storage
@@ -74,6 +74,9 @@ async function fetchMovies(title, genreId, page = 1) {
 
         const movies = data.results;
 
+        const movieCount = document.getElementById("movie-count");
+        movieCount.innerText = `Antal filmer: ${movies.length}`;
+
         if (movies.length > 0) {
             displayMovies(movies);
             createPages(data.total_pages, page); 
@@ -108,6 +111,7 @@ function displayMovies(movies) {
         <div class="image-container">
             <button class="${buttonClass}" data-id="${movie.id}" data-title="${movie.title}" data-poster="${movie.poster_path}" aria-label="${buttonText === '+' ? 'Spara' : 'Ta bort'} ${movie.title} bland dina favoriter">${buttonText}</button>
             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+            <button class="details-button" data-id="${movie.id}">Visa detaljer</button>
         </div>
         <h3 class="movie-title">${movie.title}</h3>
         `;
@@ -115,6 +119,16 @@ function displayMovies(movies) {
         movieContainer.appendChild(movieCard);
     });
 
+
+    const detailButtons = document.querySelectorAll(".details-button");
+
+    detailButtons.forEach(button => {
+
+        button.addEventListener("click", async (event) => {
+            const movieId = button.getAttribute("data-id");
+            await openMovieDetails(movieId);
+        });
+    });
 
     const buttons = document.querySelectorAll(".add-button, .remove-button");
 
@@ -187,9 +201,20 @@ function displayFavourites() {
                 <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
             </div>
             <h3 class="movie-title">${movie.title}</h3>
+            <button class="details-button" data-id="${movie.id}">Visa detaljer</button>
         `;
 
         movieContainer.appendChild(movieCard);
+    });
+
+    const detailButtons = document.querySelectorAll(".details-button");
+
+    detailButtons.forEach(button => {
+
+        button.addEventListener("click", async (event) => {
+            const movieId = button.getAttribute("data-id");
+            await openMovieDetails(movieId);
+        });
     });
 
     const buttons = document.querySelectorAll(".remove-button");
@@ -198,10 +223,31 @@ function displayFavourites() {
             const button = event.target;
             const movieId = parseInt(button.getAttribute("data-id"));
             removeFromFavourites(movieId);
-            displayFavourites(); // Uppdatera listan av sparade filmer
+            displayFavourites(); 
         });
     });
 }
+
+async function openMovieDetails(movieId) {
+    try {
+        const response = await fetch(`${baseUrl}/movie/${movieId}?api_key=${apiKey}`);
+        const movieDetails = await response.json();
+
+        document.getElementById("movie-title-modal").innerText = movieDetails.title;
+        document.getElementById("movie-poster-modal").src = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
+        document.getElementById("movie-overview").innerText = movieDetails.overview;
+        document.getElementById("movie-release-date").innerText = movieDetails.release_date;
+        document.getElementById("movie-rating").innerText = movieDetails.vote_average;
+
+        document.getElementById("movie-modal").style.display = "flex";
+    } catch (error) {
+        console.error('Fel vid hämtning av filmdetaljer:', error);
+    }
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+    document.getElementById("movie-modal").style.display = "none";
+});
 
 // Function for pagination and to create page buttons
 function createPages(totalPages, currentPage = 1) {
