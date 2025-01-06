@@ -12,7 +12,7 @@
         <div class="header-container">
 
             <div id="logo">
-                <!-- Länka till  https://www.hemmakvall.se/ -->
+                <a href="https://www.hemmakvall.se/"><img src="hemmakvall-logo.png" alt="Hemmakväll logga"></a>
             </div>
 
             <div id="hamburger-menu">
@@ -29,6 +29,10 @@
                 </nav>
             </div>
         </div>
+        
+    </header>
+
+    <div class="movies-header">
 
         <div class="search-container">
 
@@ -50,15 +54,31 @@
             <input type="text" id="search-input" aria-label="Sök efter en filmtitel" placeholder="Ange filmtitel">
 
             <button id="search-button" aria-label="Sök efter filmer"><i class="fa fa-search"></i></button>
-
         </div>
-        
-    </header>
 
-    <main>
         <button id="favourites-button" aria-label="Se dina sparade filmer">Sparade filmer</button>
+
+    </div>
+
+    <main>  
+        <div id="movie-count"></div>
+
         <div id="movie-container"></div>
+
+        <div id="pagination-container"></div>
     </main>
+
+    <div id="movie-modal" class="modal">
+
+        <div class="modal-content">
+            <span id="modal-close" class="modal-close">&times;</span>
+            <h2 id="movie-title-modal"></h2>
+            <img id="movie-poster-modal" src="" alt="" />
+            <p id="movie-overview"></p>
+            <p><strong>Release Date:</strong> <span id="movie-release-date"></span></p>
+            <p><strong>Rating:</strong> <span id="movie-rating"></span></p>
+        </div>
+    </div>
 
     <footer>
         <div id="footer-container">
