@@ -17,6 +17,7 @@ Hur du startar och sedan navigerar på applikationen:
 Länk till Figma: 
 
 API:iet jag använde var: https://www.omdbapi.com/
+Bas URL och respektive endpoints finns tydligt länkade i själva Javascript koden.
 För att hämta data använder jag mig av tre olika endpoints. En för att söka efter titel, en för att filtrera efter genre och en där jag hämtar på en lista på de mest populära filmerna men jag använder också denna endpoint för att få mer generell information om en film. 
 
 De parametrar som används för att få den data jag behöver:
@@ -27,10 +28,10 @@ De parametrar som används för att få den data jag behöver:
 - movieId: Hämtar information om en specifik film. 
 
 Datahantering: 
-API anroppet hämtar data i JSON format. I fetchMovies funktionen hämtas den data som anropas vilket sedan valideras för att sedan parsas så länge det inte blivit något fel vid själva hämtningen, t.ex. om servern var nere eller om det är något fel med API nyckeln. Efter det kollar vi om vi har hittat några filmer inom det kriteriet som söks efter och kallar sedan på displayMovies funktionen om vi har hittat filmer, denna funktion renderar då alla filmer som matchar sökningen. Ett ytterligare anrop görs när användaren vill se mer information om en film, då anropas funktionen openMovieDetails som hämtar mer information om just den filmen, denna data hanteras på samma sätt. 
+API anroppet hämtar data i JSON format. I fetchMovies funktionen hämtas den data som anropas vilket sedan valideras för att sedan parsas så länge det inte blivit något fel vid själva hämtningen, t.ex. om servern var nere eller om det är något fel med API nyckeln. Efter det kollar vi om vi har hittat några filmer inom det kriteriet som söks efter och kallar sedan på displayMovies funktionen om vi har hittat filmer, denna funktion renderar då alla filmer som matchar sökningen. Ett ytterligare anrop görs när användaren vill se mer information om en film, då anropas funktionen openMovieDetails som hämtar mer information om just den filmen. Vid detta anrop används Promise.all() för att hämta mer information om filmen från två olika endpoints. Den första anropet hämtar information om filmen och den andra anropet hämtar specifik information om skådespelarna i filmen. 
 
 HTTP/HTTPS & Asynkronitet:
-I funktionerna fetchMovies och openMoviesDetails används fetch() för att göra asynkrona HTTP GET-förfrågninar till API:et. Använder async/await så att funktionen väntar på respons från API innan det bearbetas. Använder try/catch för att hantera eventuella fel eller nätverksproblem samt återger information kring detta till användaren. 
+I funktionerna fetchMovies och openMoviesDetails används fetch() för att göra asynkrona HTTP GET-förfrågninar till API:et. Använder async/await så att funktionen väntar på respons från API innan det bearbetas. Använder try/catch för att hantera eventuella fel eller nätverksproblem samt återger information kring detta till användaren. I openMovieDetails används även Promise.all() för att parallellt hämta data från två olika endpoints.
 
 Felhantering:
 Try/catch visar vilket typ av fel som uppstått, t.ex. 404 eller 401. Ogiltiga sökningar hanteras genom att kolla om det finns några filmer som matchar sökningen och att endast visa ett meddelande när det inte fanns några filmer. 
