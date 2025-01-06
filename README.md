@@ -78,7 +78,7 @@ Har jobbat i 3/4 brancher. Gjorde en enkel struktur i main, skapade sedan en dev
 en för fetch funktionerna och en för pagineringsfunktionen. Började då med att göra klart det mesta i fetch vilket även inkluderade displayMovies 
 funktionen och allt kring localStorage. Sedan mergade jag från fetch-dev in i dev, sedan pullade jag från den uppdaterade dev för att implementera 
 pagineringen och mergade då tillbaka i dev igen. Därefter fortsatte jag jobba i dev för att göra det sista kring styling och eventuella små fixar 
-i övriga funktioner. 
+i övriga funktioner. Det sista jag gjorde innan inlämning var att skriva den här meningen innan jag merga dev med main och för att sedan lämna in projektet.
 
 ----------------------------------------------------------------------------------------------------------------
 
