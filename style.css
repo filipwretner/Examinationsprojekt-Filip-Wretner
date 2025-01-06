@@ -3,6 +3,9 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 header {
@@ -163,6 +166,8 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
+    padding-bottom: 60px;
 }
 
 #movie-count {
@@ -182,6 +187,7 @@ main {
     align-content: center;
     width: 80%;
     margin: 0 auto;
+    margin-bottom: 60px;
 }
 
 .movie-card {
@@ -193,7 +199,6 @@ main {
     text-align: center;
     height: 360px;
     box-sizing: border-box;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .image-container {
@@ -204,7 +209,7 @@ main {
     justify-content: center;
     flex-direction: column;
     margin: 5px;
-    background-color: #f0f0f0;
+    background-color: #f7f7f7;
     border-radius: 5px;
 }
 
@@ -353,6 +358,7 @@ main {
     gap: 10px; 
     margin: 20px 0; 
     font-family: "Open Sans", sans-serif; 
+    padding-bottom: 20px;
 }
 
 .page-button {

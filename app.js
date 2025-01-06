@@ -12,15 +12,20 @@ const searchButton = document.getElementById("search-button");
 const favouritesButton = document.getElementById("favourites-button");
 const movieContainer = document.getElementById("movie-container");
 
-
+// Hamburger-menu toggle
 menuToggle.addEventListener("click", () => {menu.classList.toggle("active");});
 
-
+// fetches movies based on inputs
 searchButton.addEventListener("click", () => {
+
+    // Resets favourite button when we search 
+    if (showingFavourites) {
+        favouritesButton.innerText = "Sparade filmer";
+        showingFavourites = false;
+    }
+
     const query = searchInput.value || ''; 
     const genreId = selectGenre.value || ''; 
-    console.log("Title:", query);  // TA BORT INNAN INLÄMNING
-    console.log("Genre ID:", genreId); // TA BORT INNAN INLÄMNING
     fetchMovies(query, genreId);
 });
 
@@ -28,12 +33,13 @@ async function fetchMovies(title, genreId, page = 1) {
 
     try {
 
-        // Validera och trimma inputs
+        // Trim and validate inputs
         title = (title && typeof title === 'string') ? title.trim() : '';
         genreId = (genreId && typeof genreId === 'string') ? genreId.trim() : '';
 
         let url;
         
+        // Use different endpoints and parameters based on input
         if (title && genreId) {
             url = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}&page=${page}`;
         } else if (genreId) {
@@ -74,9 +80,11 @@ async function fetchMovies(title, genreId, page = 1) {
 
         const movies = data.results;
 
+        // Updates movie count
         const movieCount = document.getElementById("movie-count");
         movieCount.innerText = `Antal filmer: ${movies.length}`;
 
+        // Updates the display page
         if (movies.length > 0) {
             displayMovies(movies);
             createPages(data.total_pages, page); 
@@ -85,6 +93,7 @@ async function fetchMovies(title, genreId, page = 1) {
         }
 
     } catch (error) {
+        // Handles errors and prints them out in place of the movies
         console.error('Fel:', error.message || error);
         movieContainer.innerHTML = `
         <p>Ett fel uppstod vid hämtning av filmer. Försök igen senare.</p>
@@ -95,6 +104,10 @@ async function fetchMovies(title, genreId, page = 1) {
 
 
 function displayMovies(movies) {
+
+    // Makes sure pagination is shown 
+    const paginationContainer = document.getElementById("pagination-container");
+    paginationContainer.style.display = "flex";
 
     movieContainer.innerHTML = "";
 
@@ -122,6 +135,7 @@ function displayMovies(movies) {
 
     const detailButtons = document.querySelectorAll(".details-button");
 
+    // Button that calls for movie details
     detailButtons.forEach(button => {
 
         button.addEventListener("click", async (event) => {
@@ -132,15 +146,19 @@ function displayMovies(movies) {
 
     const buttons = document.querySelectorAll(".add-button, .remove-button");
 
+    // Logic for add and remove buttons
     buttons.forEach(button => {
 
         button.addEventListener("click", (event) => {
 
             const button = event.target;
+
+            // We want to save the id, title and poster path to be able to print out favourite movies and also remove the correct one
             const movieId = parseInt(button.getAttribute("data-id"));
             const movieTitle = button.getAttribute("data-title");
             const moviePoster = button.getAttribute("data-poster");
 
+            // If button is add button and gets pressed, we save and change the button to remove button
             if (button.classList.contains("add-button")) {
 
                 saveAsFavourite(movieId, movieTitle, moviePoster);
@@ -148,6 +166,7 @@ function displayMovies(movies) {
                 button.classList.add("remove-button");
                 button.innerText = "-";
 
+            // Same as above but reverse    
             } else if (button.classList.contains("remove-button")) {
 
                 removeFromFavourites(movieId);
@@ -156,6 +175,7 @@ function displayMovies(movies) {
                 button.innerText = "+";
             }
 
+            // Dummy variable to check if we have the "show favourites" button pressed
             if (showingFavourites) {
                 displayFavourites();
             }
@@ -168,6 +188,7 @@ let showingFavourites = false;
 
 favouritesButton.addEventListener("click", () => {
 
+    // Similar logic to add/remove buttons but this time for showing all or  just favourite movies
     if (showingFavourites) {
         fetchMovies();
         favouritesButton.innerText = "Sparade filmer";
@@ -182,6 +203,10 @@ favouritesButton.addEventListener("click", () => {
 });
 
 function displayFavourites() {
+
+    // Hides pagination when showing favourites
+    const paginationContainer = document.getElementById("pagination-container");
+    paginationContainer.style.display = "none";
 
     if (favouriteMovies.length === 0) {
         movieContainer.innerHTML = "<p>Du har inga sparade filmer.</p>";
@@ -218,12 +243,19 @@ function displayFavourites() {
     });
 
     const buttons = document.querySelectorAll(".remove-button");
+
     buttons.forEach(button => {
+
         button.addEventListener("click", (event) => {
             const button = event.target;
             const movieId = parseInt(button.getAttribute("data-id"));
-            removeFromFavourites(movieId);
-            displayFavourites(); 
+
+            const userConfirmed = confirm("Är du säker på att du vill ta bort denna film från dina favoriter?");
+
+            if (userConfirmed) {
+                removeFromFavourites(movieId);
+                displayFavourites(); 
+            }
         });
     });
 }
@@ -231,9 +263,11 @@ function displayFavourites() {
 async function openMovieDetails(movieId) {
 
     try {
+        // Fetches movie details based on specific ID
         const response = await fetch(`${baseUrl}/movie/${movieId}?api_key=${apiKey}`);
 
         if (!response.ok) {
+
             let errorMessage;
 
             switch (response.status) {
@@ -255,6 +289,7 @@ async function openMovieDetails(movieId) {
 
         const movieDetails = await response.json();
 
+        // Adds movie details to modal and changes display from none to flex.
         document.getElementById("movie-title-modal").innerText = movieDetails.title;
         document.getElementById("movie-poster-modal").src = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
         document.getElementById("movie-overview").innerText = movieDetails.overview;
@@ -272,11 +307,12 @@ async function openMovieDetails(movieId) {
     }
 }
 
+// Closes modal by changing display from flex to none
 document.getElementById("modal-close").addEventListener("click", () => {
     document.getElementById("movie-modal").style.display = "none";
 });
 
-// Function for pagination and to create page buttons
+
 function createPages(totalPages, currentPage = 1) {
 
     const paginationContainer = document.getElementById("pagination-container");
@@ -285,15 +321,19 @@ function createPages(totalPages, currentPage = 1) {
 
     totalPages = 50;
 
+    // Logic below makes sure we always have atleast 5 pages to navigate between
     const startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(totalPages, startPage + 4);
 
+    // Creates button that directs to the first page
     if (startPage > 1) {
         const firstPageButton = document.createElement("button");
         firstPageButton.className = "page-button";
         firstPageButton.innerText = "1";
+        firstPageButton.addEventListener("click", () => fetchMovies(searchInput.value, selectGenre.value, 1));
         paginationContainer.appendChild(firstPageButton);
 
+        // Creates dots if there's a gap between the first overall page and the first page in the pagination
         if (startPage > 2) {
             const dots = document.createElement("span");
             dots.innerText = "...";
@@ -301,6 +341,7 @@ function createPages(totalPages, currentPage = 1) {
         }
     }
 
+    // Creates buttons for each page, capped of by an end page so we don't print out 50 buttons at once
     for (let i = startPage; i <= endPage; i++) {
 
         const pageButton = document.createElement("button");
@@ -312,12 +353,13 @@ function createPages(totalPages, currentPage = 1) {
         }
 
         pageButton.addEventListener("click", () => {
-            fetchMovies(searchInput.value, selectGenre.value, i); // Laddar filmer för vald sida
+            fetchMovies(searchInput.value, selectGenre.value, i); 
         });
 
         paginationContainer.appendChild(pageButton);
     }
 
+    // Same as the first page button but for the last page
     if (endPage < totalPages) {
 
         if (endPage < totalPages - 1) {
@@ -329,10 +371,12 @@ function createPages(totalPages, currentPage = 1) {
         const lastPageButton = document.createElement("button");
         lastPageButton.className = "page-button";
         lastPageButton.innerText = totalPages;
+        lastPageButton.addEventListener("click", () => fetchMovies(searchInput.value, selectGenre.value, totalPages));
         paginationContainer.appendChild(lastPageButton);
     }
 }
 
+// Two function below handles local storage
 function saveAsFavourite(id, title, posterPath) {
 
     if (!favouriteMovies.some(movie => movie.id === id)) {
@@ -343,7 +387,7 @@ function saveAsFavourite(id, title, posterPath) {
     }
 }
 
-// Function to remove movies from favourites
+
 function removeFromFavourites(id) {
 
     const movieIndex = favouriteMovies.findIndex(movie => movie.id === id);
@@ -358,5 +402,5 @@ function removeFromFavourites(id) {
     
 }
 
-// Initial page load
+
 fetchMovies();
