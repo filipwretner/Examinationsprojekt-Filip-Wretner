@@ -261,16 +261,20 @@ function displayFavourites() {
 }
 
 async function openMovieDetails(movieId) {
-
     try {
-        // Fetches movie details based on specific ID
-        const response = await fetch(`${baseUrl}/movie/${movieId}?api_key=${apiKey}`);
 
-        if (!response.ok) {
+        // Fetch both movie details and cast at the same time
+        const [movieDetails, movieCast] = await Promise.all([
+            fetch(`${baseUrl}/movie/${movieId}?api_key=${apiKey}`),
+            fetch(`${baseUrl}/movie/${movieId}/credits?api_key=${apiKey}`)
+        ]);
 
+        // Check if both responses are ok
+        if (!movieDetails.ok || !movieCast.ok) {
             let errorMessage;
+            const failedResponse = !movieDetails.ok ? movieDetails : movieCast;
 
-            switch (response.status) {
+            switch (failedResponse.status) {
                 case 401:
                     errorMessage = 'Obehörig åtkomst. Kontrollera API-nyckeln.';
                     break;
@@ -281,20 +285,27 @@ async function openMovieDetails(movieId) {
                     errorMessage = 'Serverfel. Försök igen senare.';
                     break;
                 default:
-                    errorMessage = `HTTP-fel! Status: ${response.status}`;
+                    errorMessage = `HTTP-fel! Status: ${failedResponse.status}`;
             }
-
             throw new Error(errorMessage);
         }
 
-        const movieDetails = await response.json();
+        
+        const [movieData, castData] = await Promise.all([
+            movieDetails.json(),
+            movieCast.json()
+        ]);
 
-        // Adds movie details to modal and changes display from none to flex.
-        document.getElementById("movie-title-modal").innerText = movieDetails.title;
-        document.getElementById("movie-poster-modal").src = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
-        document.getElementById("movie-overview").innerText = movieDetails.overview;
-        document.getElementById("movie-release-date").innerText = movieDetails.release_date;
-        document.getElementById("movie-rating").innerText = movieDetails.vote_average;
+        // Get top 5 cast members
+        const mainCast = castData.cast.slice(0, 5).map(actor => actor.name).join(', ');
+
+        // Update modal with all information
+        document.getElementById("movie-title-modal").innerText = movieData.title;
+        document.getElementById("movie-poster-modal").src = `https://image.tmdb.org/t/p/w500${movieData.poster_path}`;
+        document.getElementById("movie-overview").innerText = movieData.overview;
+        document.getElementById("movie-release-date").innerText = movieData.release_date;
+        document.getElementById("movie-rating").innerText = movieData.vote_average;
+        document.getElementById("movie-cast").innerText = mainCast;
 
         document.getElementById("movie-modal").style.display = "flex";
 
@@ -397,7 +408,6 @@ function removeFromFavourites(id) {
         favouriteMovies.splice(movieIndex, 1);
         localStorage.setItem("favourites", JSON.stringify(favouriteMovies));
 
-        console.log(`Filmen togs bort från favoriter`);
     } 
     
 }
