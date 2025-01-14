@@ -15,6 +15,8 @@ Hur du startar och sedan navigerar på applikationen:
 - Kan såklart också ta bort filmer från favoriter genom att trycka på '-' knappen på ett filmkort du sparat som favorit.
 - Trycka på "Visa detaljer" knappen på en viss film för att få mer detaljerad information t.ex. handling och skådespelare.
 - Bläddra bland filmer genom att använda pagineringen.
+- I hamburgarmenyn längst upp till höger kan du trycka "kontakta oss" för att få upp ett kontaktformulär.
+- För att ta dig tillbaka till Filmsamlaren från kontaktformuläret så trycker du på Hemmakväll loggan längst upp till vänster.
 
 ---------------------------------------------------------------------------------------------------------
 
@@ -73,12 +75,15 @@ att använder trycker bort av misstag och måste nu gå tillbaka och söka upp f
 
 ----------------------------------------------------------------------------------------------------------------
 
+Mappstruktur:
+- public innehåller båda HTML filerna
+- src innehåller båda Javascript filerna
+Övriga filer tillhör inte några mappar
+----------------------------------------------------------------------------------------------------------------
+
 Verisionshantering i Git: 
-Har jobbat i 3/4 brancher. Gjorde en enkel struktur i main, skapade sedan en dev branch från main och sedan två feature branches från dev:
-en för fetch funktionerna och en för pagineringsfunktionen. Började då med att göra klart det mesta i fetch vilket även inkluderade displayMovies 
-funktionen och allt kring localStorage. Sedan mergade jag från fetch-dev in i dev, sedan pullade jag från den uppdaterade dev för att implementera 
-pagineringen och mergade då tillbaka i dev igen. Därefter fortsatte jag jobba i dev för att göra det sista kring styling och eventuella små fixar 
-i övriga funktioner. Det sista jag gjorde innan inlämning var att skriva den här meningen innan jag merga dev med main och för att sedan lämna in projektet.
+Har jobbat i 3 feature brancher och använt 1 dev branch där jag testat hela applikationen innan jag mergade till main. Gjorde en enkel struktur i main, skapade sedan en dev branch från main och sedan tre feature branches från dev:
+en för fetch funktionerna och en för pagineringsfunktionen. Började då med att göra klart det mesta i fetch vilket även inkluderade displayMovies funktionen och allt kring localStorage. Sedan mergade jag från fetch-dev in i dev, sedan pullade jag från den uppdaterade dev för att implementera pagineringen och mergade då tillbaka i dev igen. Därefter fortsatte jag jobba i dev för att göra det sista kring styling och eventuella små fixar i övriga funktioner. Jag gjorde tillslut en tredje feature branch för att lägga till ytterligare en HTML sida, denna gång var det bara ett enkelt kontaktformulär. Det sista jag gjorde innan inlämning var att skriva den här meningen innan jag merga dev med main och för att sedan lämna in projektet.
 
 ----------------------------------------------------------------------------------------------------------------
 
