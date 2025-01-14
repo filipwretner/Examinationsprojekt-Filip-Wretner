@@ -10,6 +10,7 @@ const selectGenre = document.getElementById("select-genre");
 const searchInput = document.getElementById("search-input");
 const searchButton = document.getElementById("search-button");
 const favouritesButton = document.getElementById("favourites-button");
+const movieCount = document.getElementById("movie-count");
 const movieContainer = document.getElementById("movie-container");
 
 // Hamburger-menu toggle
@@ -78,10 +79,13 @@ async function fetchMovies(title, genreId, page = 1) {
             throw new Error('Svar från API är ogiltigt.');
         }
 
-        const movies = data.results;
+        let movies = data.results;
+
+        if (title && genreId) {
+            movies = movies.filter(movie => movie.genre_ids.includes(parseInt(genreId)));
+        }
 
         // Updates movie count
-        const movieCount = document.getElementById("movie-count");
         movieCount.innerText = `Antal filmer: ${movies.length}`;
 
         // Updates the display page
@@ -224,9 +228,9 @@ function displayFavourites() {
             <div class="image-container">
                 <button class="remove-button" data-id="${movie.id}" data-title="${movie.title}" aria-label="Ta bort ${movie.title} bland dina favoriter">-</button>
                 <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Affisch för ${movie.title}">
+                <button class="details-button" data-id="${movie.id}">Visa detaljer</button>
             </div>
             <h3 class="movie-title">${movie.title}</h3>
-            <button class="details-button" data-id="${movie.id}">Visa detaljer</button>
         `;
 
         movieContainer.appendChild(movieCard);
@@ -261,6 +265,7 @@ function displayFavourites() {
 }
 
 async function openMovieDetails(movieId) {
+
     try {
 
         // Fetch both movie details and cast at the same time
