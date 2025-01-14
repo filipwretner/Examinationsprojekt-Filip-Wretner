@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hemmakväll - Filmsamlaren</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+
+            <div id="logo">
+                <a href="https://www.hemmakvall.se/"><img src="/hemmakvall-logo.png" alt="Hemmakväll logga"></a>
+            </div>
+
+            <div id="hamburger-menu">
+                <button id="menu-toggle" aria-label="Öppna meny">☰</button>
+
+                <nav class="menu" id="menu">
+                    <ul>
+                        <li id="menu-first"><a href="https://www.hemmakvall.se/forst-pa-hemmakvall/"></a>FÖRST HOS OSS</li>
+                        <li id="menu-second"><a href="https://www.hemmakvall.se/hitta-butik/"></a>HITTA BUTIK</li>
+                        <li id="menu-third"><a href="https://www.hemmakvall.se/medlem/"></a>KUNDKLUBBEN</li>
+                        <li id="menu-fourth"><a href="https://www.hemmakvall.se/kontakta-oss/"></a>KONTAKTA OSS</li>
+                        <li id="menu-fifth"><a href="https://www.hemmakvall.se/hemmis-kvallis/"></a>HEMMIS & KVÄLLIS</li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+    </header>
+
+    <div class="movies-header">
+
+        <div class="search-container">
+
+            <select id="select-genre" aria-label="Välj en filmgenre att söka efter">
+                <option value="">Alla genrer</option>
+                <option value="28">Action</option>
+                <option value="16">Animerat</option>
+                <option value="18">Drama</option>
+                <option value="14">Fantasy</option>
+                <option value="35">Komedi</option>
+                <option value="80">Kriminaldrama</option>
+                <option value="10749">Romantik</option>
+                <option value="878">Scifi</option>
+                <option value="27">Skräck</option>
+                <option value="53">Thriller</option>
+                <option value="12">Äventyr</option>
+            </select>
+
+            <input type="text" id="search-input" aria-label="Sök efter en filmtitel" placeholder="Ange filmtitel">
+
+            <button id="search-button" aria-label="Sök efter filmer"><i class="fa fa-search"></i></button>
+        </div>
+
+        <button id="favourites-button" aria-label="Se dina sparade filmer">Sparade filmer</button>
+
+    </div>
+
+    <main>  
+        <div id="movie-count" aria-label="Antal filmer på denna sida"></div>
+
+        <div id="movie-container"></div>
+
+        <div id="pagination-container"></div>
+    </main>
+
+    <div id="movie-modal" class="modal">
+
+        <div class="modal-content">
+            <span id="modal-close" class="modal-close">&times;</span>
+            <h2 id="movie-title-modal"></h2>
+            <img id="movie-poster-modal" src="" alt="" />
+            <p id="movie-overview"></p>
+            <p><strong>Release Date:</strong> <span id="movie-release-date"></span></p>
+            <p><strong>Huvudroller:</strong> <span id="movie-cast"></span></p>
+            <p><strong>Rating:</strong> <span id="movie-rating"></span></p>
+        </div>
+    </div>
+
+    <footer>
+        <div id="footer-container">
+            <div class="footer-section">
+                <h3>Hemmakväll - Filmsamlaren</h3>
+
+                <ul>
+                    <li><a href="#">Om oss</a></li>
+                    <li><a href="#">Kontakta oss</a></li>
+                    <li><a href="#">Villkor</a></li>
+                    <li><a href="#">Integritetspolicy</a></li>
+                </ul>
+
+            </div>
+
+            <div class="footer-section">
+                <h3>Följ oss</h3>
+
+                <div class="social-links">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Hemmakväll. Alla rättigheter förbehållna.</p>
+            </div>
+        </div>
+
+    </footer>
+
+    <script src="/src/app.js"></script>
+</body>
+</html>
